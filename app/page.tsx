@@ -1,103 +1,254 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
+import { useState, useEffect } from "react"
+import Link from "next/link"
+import { Search, Heart, Shield, Truck, Clock } from "lucide-react"
+import MedicineCard from "@/components/ui/medicine-card"
+import LoadingSpinner from "@/components/ui/loading-spinner"
+
+interface Medicine {
+  _id: string
+  name: string
+  description: string
+  price: number
+  category: string
+  stock: number
+  requiresPrescription: boolean
+  images: Array<{
+    url: string
+    isPrimary: boolean
+  }>
+  manufacturer: string
+}
+
+const categories = ["All", "Pain Relief", "Antibiotics", "Vitamins", "First Aid", "Prescription", "Other"]
+
+export default function HomePage() {
+  const [medicines, setMedicines] = useState<Medicine[]>([])
+  const [filteredMedicines, setFilteredMedicines] = useState<Medicine[]>([])
+  const [loading, setLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState("All")
+
+  useEffect(() => {
+    fetchMedicines()
+  }, [])
+
+  useEffect(() => {
+    filterMedicines()
+  }, [medicines, searchTerm, selectedCategory])
+
+  const fetchMedicines = async () => {
+    try {
+      // Mock data for demo - replace with actual API call
+      const mockMedicines: Medicine[] = [
+        {
+          _id: "1",
+          name: "Paracetamol 500mg",
+          description: "Effective pain relief and fever reducer. Safe for adults and children over 12 years.",
+          price: 25,
+          category: "Pain Relief",
+          stock: 150,
+          requiresPrescription: false,
+          images: [{ url: "/placeholder.svg?height=200&width=280", isPrimary: true }],
+          manufacturer: "HealthCorp",
+        },
+        {
+          _id: "2",
+          name: "Amoxicillin 250mg",
+          description: "Broad-spectrum antibiotic for bacterial infections. Prescription required.",
+          price: 120,
+          category: "Antibiotics",
+          stock: 75,
+          requiresPrescription: true,
+          images: [{ url: "/placeholder.svg?height=200&width=280", isPrimary: true }],
+          manufacturer: "MediPharm",
+        },
+        {
+          _id: "3",
+          name: "Vitamin D3 1000 IU",
+          description: "Essential vitamin D supplement for bone health and immune support.",
+          price: 180,
+          category: "Vitamins",
+          stock: 200,
+          requiresPrescription: false,
+          images: [{ url: "/placeholder.svg?height=200&width=280", isPrimary: true }],
+          manufacturer: "VitaLife",
+        },
+        {
+          _id: "4",
+          name: "Bandage Roll",
+          description: "Sterile cotton bandage roll for wound care and first aid.",
+          price: 35,
+          category: "First Aid",
+          stock: 8,
+          requiresPrescription: false,
+          images: [{ url: "/placeholder.svg?height=200&width=280", isPrimary: true }],
+          manufacturer: "FirstAid Plus",
+        },
+        {
+          _id: "5",
+          name: "Ibuprofen 400mg",
+          description: "Anti-inflammatory pain reliever for headaches, muscle pain, and fever.",
+          price: 45,
+          category: "Pain Relief",
+          stock: 120,
+          requiresPrescription: false,
+          images: [{ url: "/placeholder.svg?height=200&width=280", isPrimary: true }],
+          manufacturer: "PainFree",
+        },
+        {
+          _id: "6",
+          name: "Multivitamin Complex",
+          description: "Complete daily vitamin and mineral supplement for overall health.",
+          price: 250,
+          category: "Vitamins",
+          stock: 90,
+          requiresPrescription: false,
+          images: [{ url: "/placeholder.svg?height=200&width=280", isPrimary: true }],
+          manufacturer: "HealthBoost",
+        },
+      ]
+
+      setMedicines(mockMedicines)
+      setLoading(false)
+    } catch (error) {
+      console.error("Error fetching medicines:", error)
+      setLoading(false)
+    }
+  }
+
+  const filterMedicines = () => {
+    let filtered = medicines
+
+    if (selectedCategory !== "All") {
+      filtered = filtered.filter((medicine) => medicine.category === selectedCategory)
+    }
+
+    if (searchTerm) {
+      filtered = filtered.filter(
+        (medicine) =>
+          medicine.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          medicine.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          medicine.manufacturer.toLowerCase().includes(searchTerm.toLowerCase()),
+      )
+    }
+
+    setFilteredMedicines(filtered)
+  }
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero Section */}
+      <section className="bg-gradient-to-r from-green-600 to-blue-600 text-white py-16">
+        <div className="cura-container text-center">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6">Your Health, Our Priority</h1>
+          <p className="text-xl md:text-2xl mb-8 opacity-90">
+            Get your medicines delivered safely and quickly to your doorstep
+          </p>
+          <Link href="/medicines" className="cura-btn-primary text-lg px-8 py-3">
+            Shop Medicines
+          </Link>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-16 bg-white">
+        <div className="cura-container">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Shield className="w-8 h-8 text-green-600" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Verified Medicines</h3>
+              <p className="text-gray-600">All medicines are verified and sourced from licensed pharmacies</p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Truck className="w-8 h-8 text-blue-600" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Fast Delivery</h3>
+              <p className="text-gray-600">Quick and reliable delivery to your doorstep</p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Clock className="w-8 h-8 text-purple-600" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">24/7 Support</h3>
+              <p className="text-gray-600">Round-the-clock customer support for your queries</p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Heart className="w-8 h-8 text-red-600" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Health First</h3>
+              <p className="text-gray-600">Your health and safety is our top priority</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Medicines Section */}
+      <section className="py-16">
+        <div className="cura-container">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Popular Medicines</h2>
+            <p className="text-xl text-gray-600">Find the medicines you need from our extensive catalog</p>
+          </div>
+
+          {/* Search and Filter */}
+          <div className="flex flex-col md:flex-row gap-4 mb-8">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Search medicines..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="cura-input pl-10"
+              />
+            </div>
+            <div className="flex gap-2 flex-wrap">
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    selectedCategory === category
+                      ? "bg-green-600 text-white"
+                      : "bg-white text-gray-600 border border-gray-300 hover:bg-gray-50"
+                  }`}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Medicines Grid */}
+          {loading ? (
+            <LoadingSpinner />
+          ) : (
+            <div className="cura-medicine-grid">
+              {filteredMedicines.map((medicine) => (
+                <MedicineCard key={medicine._id} medicine={medicine} />
+              ))}
+            </div>
+          )}
+
+          {!loading && filteredMedicines.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-xl text-gray-600">No medicines found matching your criteria.</p>
+            </div>
+          )}
+
+          <div className="text-center mt-12">
+            <Link href="/medicines" className="cura-btn-primary">
+              View All Medicines
+            </Link>
+          </div>
+        </div>
+      </section>
     </div>
-  );
+  )
 }
