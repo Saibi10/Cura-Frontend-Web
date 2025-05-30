@@ -7,22 +7,7 @@ import { ArrowLeft, ShoppingCart, Heart, AlertCircle, Package, Calendar, Buildin
 import { useCart } from "@/contexts/cart-context"
 import { useAuth } from "@/contexts/auth-context"
 import LoadingSpinner from "@/components/ui/loading-spinner"
-
-interface Medicine {
-    _id: string
-    name: string
-    description: string
-    price: number
-    category: string
-    stock: number
-    requiresPrescription: boolean
-    images: Array<{
-        url: string
-        isPrimary: boolean
-    }>
-    manufacturer: string
-    expiryDate: string
-}
+import { medicineApi, Medicine } from "@/api"
 
 export default function MedicineDetailPage() {
     const params = useParams()
@@ -43,29 +28,15 @@ export default function MedicineDetailPage() {
 
     const fetchMedicine = async (id: string) => {
         try {
-            // Mock data for demo - replace with actual API call
-            const mockMedicine: Medicine = {
-                _id: id,
-                name: "Paracetamol 500mg",
-                description:
-                    "Paracetamol is a widely used over-the-counter pain reliever and fever reducer. It is effective for treating mild to moderate pain including headaches, muscle aches, arthritis, backaches, toothaches, colds, and fevers. This medication works by blocking the production of certain natural substances in your body that cause inflammation. Paracetamol is generally safe when used as directed and is suitable for most adults and children over 12 years of age.",
-                price: 25,
-                category: "Pain Relief",
-                stock: 150,
-                requiresPrescription: false,
-                images: [
-                    { url: "/placeholder.svg?height=400&width=400", isPrimary: true },
-                    { url: "/placeholder.svg?height=400&width=400", isPrimary: false },
-                    { url: "/placeholder.svg?height=400&width=400", isPrimary: false },
-                ],
-                manufacturer: "HealthCorp Pharmaceuticals",
-                expiryDate: "2025-12-31",
+            const response = await medicineApi.getMedicineById(id)
+            if (response.success && response.data) {
+                setMedicine(response.data)
+            } else {
+                console.error("Error fetching medicine:", response.message)
             }
-
-            setMedicine(mockMedicine)
-            setLoading(false)
         } catch (error) {
             console.error("Error fetching medicine:", error)
+        } finally {
             setLoading(false)
         }
     }

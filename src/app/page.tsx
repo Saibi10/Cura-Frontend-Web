@@ -6,21 +6,7 @@ import { Search, Heart, Shield, Truck, Clock } from "lucide-react"
 import MedicineCard from "../components/ui/medicine-card"
 import LoadingSpinner from "../components/ui/loading-spinner"
 import Header from "../components/layout/header"
-
-interface Medicine {
-  _id: string
-  name: string
-  description: string
-  price: number
-  category: string
-  stock: number
-  requiresPrescription: boolean
-  images: Array<{
-    url: string
-    isPrimary: boolean
-  }>
-  manufacturer: string
-}
+import { medicineApi, Medicine } from "@/api"
 
 const categories = ["All", "Pain Relief", "Antibiotics", "Vitamins", "First Aid", "Prescription", "Other"]
 
@@ -41,83 +27,23 @@ export default function HomePage() {
 
   const fetchMedicines = async () => {
     try {
-      // Mock data for demo - replace with actual API call
-      const mockMedicines: Medicine[] = [
-        {
-          _id: "1",
-          name: "Paracetamol 500mg",
-          description: "Effective pain relief and fever reducer. Safe for adults and children over 12 years.",
-          price: 25,
-          category: "Pain Relief",
-          stock: 150,
-          requiresPrescription: false,
-          images: [{ url: "/placeholder.svg?height=200&width=280", isPrimary: true }],
-          manufacturer: "HealthCorp",
-        },
-        {
-          _id: "2",
-          name: "Amoxicillin 250mg",
-          description: "Broad-spectrum antibiotic for bacterial infections. Prescription required.",
-          price: 120,
-          category: "Antibiotics",
-          stock: 75,
-          requiresPrescription: true,
-          images: [{ url: "/placeholder.svg?height=200&width=280", isPrimary: true }],
-          manufacturer: "MediPharm",
-        },
-        {
-          _id: "3",
-          name: "Vitamin D3 1000 IU",
-          description: "Essential vitamin D supplement for bone health and immune support.",
-          price: 180,
-          category: "Vitamins",
-          stock: 200,
-          requiresPrescription: false,
-          images: [{ url: "/placeholder.svg?height=200&width=280", isPrimary: true }],
-          manufacturer: "VitaLife",
-        },
-        {
-          _id: "4",
-          name: "Bandage Roll",
-          description: "Sterile cotton bandage roll for wound care and first aid.",
-          price: 35,
-          category: "First Aid",
-          stock: 8,
-          requiresPrescription: false,
-          images: [{ url: "/placeholder.svg?height=200&width=280", isPrimary: true }],
-          manufacturer: "FirstAid Plus",
-        },
-        {
-          _id: "5",
-          name: "Ibuprofen 400mg",
-          description: "Anti-inflammatory pain reliever for headaches, muscle pain, and fever.",
-          price: 45,
-          category: "Pain Relief",
-          stock: 120,
-          requiresPrescription: false,
-          images: [{ url: "/placeholder.svg?height=200&width=280", isPrimary: true }],
-          manufacturer: "PainFree",
-        },
-        {
-          _id: "6",
-          name: "Multivitamin Complex",
-          description: "Complete daily vitamin and mineral supplement for overall health.",
-          price: 250,
-          category: "Vitamins",
-          stock: 90,
-          requiresPrescription: false,
-          images: [{ url: "/placeholder.svg?height=200&width=280", isPrimary: true }],
-          manufacturer: "HealthBoost",
-        },
-      ]
+      setLoading(true);
+      const response = await medicineApi.getAllMedicines();
+      console.log("API Response:", response); // For debugging
 
-      setMedicines(mockMedicines)
-      setLoading(false)
+      if (response.success && response.data) {
+        setMedicines(response.data);
+      } else {
+        console.error("Error fetching medicines:", response.message || "Unexpected response structure");
+        setMedicines([]);
+      }
     } catch (error) {
-      console.error("Error fetching medicines:", error)
-      setLoading(false)
+      console.error("Error fetching medicines:", error);
+      setMedicines([]);
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   const filterMedicines = () => {
     let filtered = medicines

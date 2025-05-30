@@ -9,6 +9,7 @@ import { Eye, EyeOff, Mail } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
 
 export default function LoginPage() {
+    const { login } = useAuth()
     const [formData, setFormData] = useState({
         email: "",
         password: "",
@@ -19,7 +20,6 @@ export default function LoginPage() {
     const [message, setMessage] = useState("")
     const [requiresOTP, setRequiresOTP] = useState(false)
 
-    const { login } = useAuth()
     const router = useRouter()
 
     const handleSubmit = async (e: React.FormEvent) => {

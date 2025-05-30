@@ -6,7 +6,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Eye, EyeOff, Mail, User, Phone, MapPin } from "lucide-react"
-import { useAuth } from "@/contexts/auth-context"
+import { userApi } from "@/api"
 
 export default function SignupPage() {
     const [formData, setFormData] = useState({
@@ -31,7 +31,6 @@ export default function SignupPage() {
     const [otp, setOtp] = useState("")
     const [message, setMessage] = useState("")
 
-    const { register, verifyOTP } = useAuth()
     const router = useRouter()
 
     const validateForm = () => {
@@ -74,16 +73,19 @@ export default function SignupPage() {
         setMessage("")
 
         try {
-            const result = await register(formData)
+            const result = await userApi.register(formData)
+            console.log("Registration API result:", result);
 
             if (result.success) {
-                setUserId(result.user._id)
+                console.log("Result" + result.User);
+                setUserId(result.User?._id || "")
                 setStep(2)
                 setMessage("OTP sent to your email. Please verify to complete registration.")
             } else {
                 setMessage(result.message || "Registration failed")
             }
         } catch (error) {
+            console.error("Registration error:", error)
             setMessage("An error occurred during registration")
         } finally {
             setLoading(false)
@@ -102,7 +104,9 @@ export default function SignupPage() {
         setMessage("")
 
         try {
-            const result = await verifyOTP(userId, otp)
+            console.log("User ID: " + userId);
+            console.log(otp);
+            const result = await userApi.verifyOTP(userId, otp)
 
             if (result.success) {
                 setMessage("Registration completed successfully! Redirecting to login...")

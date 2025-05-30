@@ -6,20 +6,7 @@ import { Plus, Package, ShoppingCart, Trash2, Edit } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
 import { useCart } from "@/contexts/cart-context"
 import LoadingSpinner from "@/components/ui/loading-spinner"
-
-interface MedicinePreset {
-    _id: string
-    name: string
-    medicines: Array<{
-        medicine: {
-            _id: string
-            name: string
-            price: number
-            images: Array<{ url: string; isPrimary: boolean }>
-        }
-        quantity: number
-    }>
-}
+import { medicineApi, MedicinePreset } from "@/api"
 
 export default function PresetsPage() {
     const [presets, setPresets] = useState<MedicinePreset[]>([])
@@ -39,62 +26,15 @@ export default function PresetsPage() {
 
     const fetchPresets = async () => {
         try {
-            // Mock data for demo - replace with actual API call
-            const mockPresets: MedicinePreset[] = [
-                {
-                    _id: "1",
-                    name: "Daily Vitamins",
-                    medicines: [
-                        {
-                            medicine: {
-                                _id: "3",
-                                name: "Vitamin D3 1000 IU",
-                                price: 180,
-                                images: [{ url: "/placeholder.svg?height=80&width=80", isPrimary: true }],
-                            },
-                            quantity: 1,
-                        },
-                        {
-                            medicine: {
-                                _id: "6",
-                                name: "Multivitamin Complex",
-                                price: 250,
-                                images: [{ url: "/placeholder.svg?height=80&width=80", isPrimary: true }],
-                            },
-                            quantity: 1,
-                        },
-                    ],
-                },
-                {
-                    _id: "2",
-                    name: "Pain Relief Kit",
-                    medicines: [
-                        {
-                            medicine: {
-                                _id: "1",
-                                name: "Paracetamol 500mg",
-                                price: 25,
-                                images: [{ url: "/placeholder.svg?height=80&width=80", isPrimary: true }],
-                            },
-                            quantity: 2,
-                        },
-                        {
-                            medicine: {
-                                _id: "5",
-                                name: "Ibuprofen 400mg",
-                                price: 45,
-                                images: [{ url: "/placeholder.svg?height=80&width=80", isPrimary: true }],
-                            },
-                            quantity: 1,
-                        },
-                    ],
-                },
-            ]
-
-            setPresets(mockPresets)
-            setLoading(false)
+            const response = await medicineApi.getPresets()
+            if (response.success && response.presets) {
+                setPresets(response.presets)
+            } else {
+                console.error("Error fetching presets:", response.message)
+            }
         } catch (error) {
             console.error("Error fetching presets:", error)
+        } finally {
             setLoading(false)
         }
     }
@@ -131,8 +71,12 @@ export default function PresetsPage() {
 
     const handleDeletePreset = async (presetId: string) => {
         try {
-            // Mock API call - replace with actual API
-            setPresets((prev) => prev.filter((preset) => preset._id !== presetId))
+            const response = await medicineApi.deletePreset(presetId)
+            if (response.success) {
+                setPresets((prev) => prev.filter((preset) => preset._id !== presetId))
+            } else {
+                console.error("Error deleting preset:", response.message)
+            }
         } catch (error) {
             console.error("Error deleting preset:", error)
         }

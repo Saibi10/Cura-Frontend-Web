@@ -5,23 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { Package, Clock, CheckCircle, XCircle, Truck } from "lucide-react"
 import { useAuth } from "../../contexts/auth-context"
 import LoadingSpinner from "../../components/ui/loading-spinner"
-
-interface Order {
-    _id: string
-    items: Array<{
-        medicine: {
-            _id: string
-            name: string
-            price: number
-        }
-        quantity: number
-        price: number
-    }>
-    totalAmount: number
-    status: "pending" | "processing" | "shipped" | "delivered" | "cancelled"
-    paymentStatus: "pending" | "completed" | "failed" | "refunded"
-    createdAt: string
-}
+import { orderApi, Order } from "@/api"
 
 const statusIcons = {
     pending: Clock,
@@ -57,47 +41,15 @@ export default function OrdersPage() {
 
     const fetchOrders = async () => {
         try {
-            // Mock data for demo - replace with actual API call
-            const mockOrders: Order[] = [
-                {
-                    _id: "1",
-                    items: [
-                        {
-                            medicine: { _id: "1", name: "Paracetamol 500mg", price: 25 },
-                            quantity: 2,
-                            price: 25,
-                        },
-                        {
-                            medicine: { _id: "3", name: "Vitamin D3 1000 IU", price: 180 },
-                            quantity: 1,
-                            price: 180,
-                        },
-                    ],
-                    totalAmount: 230,
-                    status: "delivered",
-                    paymentStatus: "completed",
-                    createdAt: "2024-01-15T10:30:00Z",
-                },
-                {
-                    _id: "2",
-                    items: [
-                        {
-                            medicine: { _id: "5", name: "Ibuprofen 400mg", price: 45 },
-                            quantity: 1,
-                            price: 45,
-                        },
-                    ],
-                    totalAmount: 45,
-                    status: "shipped",
-                    paymentStatus: "completed",
-                    createdAt: "2024-01-20T14:15:00Z",
-                },
-            ]
-
-            setOrders(mockOrders)
-            setLoading(false)
+            const response = await orderApi.getOrders()
+            if (response.success && response.orders) {
+                setOrders(response.orders)
+            } else {
+                console.error("Error fetching orders:", response.message)
+            }
         } catch (error) {
             console.error("Error fetching orders:", error)
+        } finally {
             setLoading(false)
         }
     }
