@@ -1,26 +1,244 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #ffffff;
+    --foreground: #171717;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background: #0a0a0a;
+      --foreground: #ededed;
+    }
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    color: var(--text-dark);
+    background-color: #ffffff;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  .cura-container {
+    @apply max-w-7xl mx-auto px-4;
+  }
+
+  .cura-card {
+    @apply bg-white rounded-xl shadow-sm border border-border-gray transition-all duration-200;
+  }
+
+  .cura-card:hover {
+    @apply shadow-md -translate-y-0.5;
+  }
+
+  .cura-btn-primary {
+    @apply bg-primary-green text-white border-none py-3 px-6 rounded-lg font-medium cursor-pointer transition-all duration-200 inline-flex items-center justify-center gap-2;
+  }
+
+  .cura-btn-primary:hover {
+    @apply bg-primary-green-dark -translate-y-0.5;
+  }
+
+  .cura-btn-secondary {
+    @apply bg-white text-primary-green border-2 border-primary-green py-3 px-6 rounded-lg font-medium cursor-pointer transition-all duration-200 inline-flex items-center justify-center gap-2;
+  }
+
+  .cura-btn-secondary:hover {
+    @apply bg-primary-green text-white;
+  }
+
+  .cura-input {
+    @apply w-full py-3 px-4 border-2 border-border-gray rounded-lg text-base transition-colors duration-200 bg-white;
+  }
+
+  .cura-input:focus {
+    @apply outline-none border-primary-green shadow-[0_0_0_3px_rgba(16,185,129,0.1)];
+  }
+
+  .cura-header {
+    @apply bg-white border-b border-border-gray py-4 sticky top-0 z-50 backdrop-blur-md;
+  }
+
+  .cura-nav {
+    @apply flex items-center justify-between;
+  }
+
+  .cura-logo {
+    @apply text-2xl font-bold text-primary-green no-underline;
+  }
+
+  .cura-nav-links {
+    @apply flex items-center gap-8 list-none;
+  }
+
+  .cura-nav-link {
+    @apply text-text-dark no-underline font-medium transition-colors duration-200;
+  }
+
+  .cura-nav-link:hover {
+    @apply text-primary-green;
+  }
+
+  .cura-badge {
+    @apply bg-primary-green text-white text-xs py-1 px-2 rounded-full font-semibold min-w-5 h-5 flex items-center justify-center;
+  }
+
+  .cura-medicine-grid {
+    @apply grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-6 mt-8;
+  }
+
+  .cura-medicine-card {
+    @apply bg-white rounded-xl overflow-hidden shadow-sm border border-border-gray transition-all duration-200;
+  }
+
+  .cura-medicine-card:hover {
+    @apply shadow-md -translate-y-0.5;
+  }
+
+  .cura-medicine-image {
+    @apply w-full h-[200px] object-cover bg-light-gray;
+  }
+
+  .cura-medicine-content {
+    @apply p-6;
+  }
+
+  .cura-medicine-title {
+    @apply text-lg font-semibold mb-2 text-text-dark;
+  }
+
+  .cura-medicine-description {
+    @apply text-text-light text-sm mb-4 leading-relaxed;
+  }
+
+  .cura-medicine-price {
+    @apply text-xl font-bold text-primary-green mb-4;
+  }
+
+  .cura-category-badge {
+    @apply bg-[rgba(16,185,129,0.1)] text-primary-green py-1 px-3 rounded-full text-xs font-medium inline-block mb-2;
+  }
+
+  .cura-prescription-badge {
+    @apply bg-[rgba(239,68,68,0.1)] text-error-red py-1 px-3 rounded-full text-xs font-medium inline-block ml-2;
+  }
+
+  .cura-stock-badge {
+    @apply bg-[rgba(245,158,11,0.1)] text-warning-yellow py-1 px-3 rounded-full text-xs font-medium inline-block ml-2;
+  }
+
+  .cura-form-group {
+    @apply mb-6;
+  }
+
+  .cura-label {
+    @apply block mb-2 font-medium text-text-dark;
+  }
+
+  .cura-error {
+    @apply text-error-red text-sm mt-2;
+  }
+
+  .cura-success {
+    @apply text-success-green text-sm mt-2;
+  }
+
+  .cura-modal-overlay {
+    @apply fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4;
+  }
+
+  .cura-modal {
+    @apply bg-white rounded-xl p-8 max-w-[500px] w-full max-h-[90vh] overflow-y-auto;
+  }
+
+  .cura-cart-item {
+    @apply flex items-center gap-4 p-4 border-b border-border-gray;
+  }
+
+  .cura-cart-item:last-child {
+    @apply border-b-0;
+  }
+
+  .cura-quantity-controls {
+    @apply flex items-center gap-2;
+  }
+
+  .cura-quantity-btn {
+    @apply w-8 h-8 border border-border-gray bg-white rounded flex items-center justify-center cursor-pointer transition-all duration-200;
+  }
+
+  .cura-quantity-btn:hover {
+    @apply bg-light-gray;
+  }
+
+  .cura-quantity-input {
+    @apply w-12 text-center py-1 border border-border-gray rounded;
+  }
+
+  .cura-preset-card {
+    @apply bg-white border-2 border-border-gray rounded-xl p-6 transition-all duration-200 cursor-pointer;
+  }
+
+  .cura-preset-card:hover {
+    @apply border-primary-green shadow-[0_4px_12px_rgba(16,185,129,0.1)];
+  }
+
+  .cura-preset-card.selected {
+    @apply border-primary-green bg-[rgba(16,185,129,0.05)];
+  }
+
+  .cura-loading {
+    @apply flex items-center justify-center p-8;
+  }
+
+  .cura-spinner {
+    @apply w-8 h-8 border-2 border-border-gray border-t-primary-green rounded-full animate-spin;
+  }
+}
+
+@media (max-width: 768px) {
+  .cura-container {
+    @apply px-3;
+  }
+
+  .cura-nav-links {
+    @apply gap-4;
+  }
+
+  .cura-medicine-grid {
+    @apply grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-4;
+  }
+
+  .cura-modal {
+    @apply m-4 p-6;
+  }
+
+  .cura-cart-item {
+    @apply flex-col items-start gap-3;
+  }
+}
+
+@media (max-width: 480px) {
+  .cura-medicine-grid {
+    @apply grid-cols-1;
+  }
+
+  .cura-nav {
+    @apply flex-col gap-4;
+  }
+
+  .cura-nav-links {
+    @apply flex-wrap justify-center;
+  }
 }
